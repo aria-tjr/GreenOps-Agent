@@ -31,7 +31,8 @@ setup(
     extras_require={
         "ml": [
             "tensorflow>=2.12.0; platform_machine != 'arm64' and platform_machine != 'aarch64'",
-            "tensorflow-macos>=2.12.0; platform_machine == 'arm64' or platform_machine == 'aarch64'",
+            "tensorflow-macos>=2.12.0; platform_system == 'Darwin' and (platform_machine == 'arm64' or platform_machine == 'aarch64')",
+            "tensorflow-metal>=0.6.0; platform_system == 'Darwin' and (platform_machine == 'arm64' or platform_machine == 'aarch64')",
             "scikit-learn>=1.3.0",
         ],
         "dev": [

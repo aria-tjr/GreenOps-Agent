@@ -8,18 +8,33 @@ Kubernetes resource utilization and workload patterns.
 import logging
 import requests
 import time
+import sys
 from datetime import datetime, timedelta
 from typing import Dict, List, Any, Optional, Union, Tuple
 
 logger = logging.getLogger(__name__)
 
 # Import mock data module if available
+MOCK_DATA_AVAILABLE = False
 try:
-    from .mockdata import prometheus as mock_prometheus
+    from greenops_agent.mockdata import prometheus as mock_prometheus
     MOCK_DATA_AVAILABLE = True
 except ImportError:
-    logger.warning("Mock data module not available")
-    MOCK_DATA_AVAILABLE = False
+    try:
+        # Try with src prefix for development environment
+        from src.greenops_agent.mockdata import prometheus as mock_prometheus
+        MOCK_DATA_AVAILABLE = True
+    except ImportError:
+        logger.warning("Mock data module not available")
+        MOCK_DATA_AVAILABLE = False
+
+# Make create_mock_prometheus_client available
+if MOCK_DATA_AVAILABLE:
+    try:
+        create_mock_prometheus_client = mock_prometheus.create_mock_prometheus_client
+    except (ImportError, AttributeError):
+        logger.warning("create_mock_prometheus_client function not available")
+        MOCK_DATA_AVAILABLE = False
 
 
 class MetricsCollector:

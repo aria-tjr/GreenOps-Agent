@@ -11,7 +11,13 @@ import numpy as np
 from typing import Dict, List, Tuple, Optional, Any, Union
 from datetime import datetime, timedelta
 
-# Use TensorFlow for LSTM implementation
+logger = logging.getLogger(__name__)
+
+# Use TensorFlow for LSTM implementation if available
+TF_AVAILABLE = False
+SKLEARN_AVAILABLE = False
+
+# Try to import TensorFlow, but don't output warning at module level
 try:
     import tensorflow as tf
     from tensorflow.keras.models import Sequential
@@ -19,16 +25,16 @@ try:
     from tensorflow.keras.optimizers import Adam
     TF_AVAILABLE = True
 except ImportError:
-    logging.warning("TensorFlow not available, falling back to simple forecasting")
-    TF_AVAILABLE = False
+    # We'll log this only when prediction is actually attempted
+    pass
 
-# Scikit-learn for preprocessing
+# Scikit-learn for preprocessing if available
 try:
     from sklearn.preprocessing import MinMaxScaler
     SKLEARN_AVAILABLE = True
 except ImportError:
-    logging.warning("Scikit-learn not available, using simple normalization")
-    SKLEARN_AVAILABLE = False
+    # We'll log this only when prediction is actually attempted
+    pass
 
 logger = logging.getLogger(__name__)
 

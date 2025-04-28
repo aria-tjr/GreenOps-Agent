@@ -9,10 +9,26 @@ impact of running workloads.
 import logging
 import requests
 import time
+import sys
 from datetime import datetime, timedelta
 from typing import Dict, Any, Optional, List, Tuple
 
 logger = logging.getLogger(__name__)
+
+# Import mock data module if available
+MOCK_CARBON_AVAILABLE = False
+try:
+    from greenops_agent.mockdata import carbon as mock_carbon
+    MOCK_CARBON_AVAILABLE = True
+except ImportError:
+    try:
+        # Try with src prefix for development environment
+        from src.greenops_agent.mockdata import carbon as mock_carbon
+        MOCK_CARBON_AVAILABLE = True
+    except ImportError:
+        logger.warning("Mock carbon module not available")
+        MOCK_CARBON_AVAILABLE = False
+
 
 class CarbonIntensityFetcher:
     """
@@ -326,11 +342,16 @@ class MockCarbonIntensityFetcher(CarbonIntensityFetcher):
         # No call to super().__init__() as we don't need API key
         self.region = region
         
-        # Import here to avoid circular imports
-        from .mockdata.carbon import create_mock_carbon_client
-        self._mock_client = create_mock_carbon_client(region=region)
-        
-        logger.info(f"Initialized MockCarbonIntensityFetcher for region: {region}")
+        # Try to import the mock carbon client
+        if MOCK_CARBON_AVAILABLE:
+            self._mock_client = mock_carbon.create_mock_carbon_client(region=region)
+            self._mock_available = True
+            logger.info(f"Initialized MockCarbonIntensityFetcher for region: {region}")
+        else:
+            logger.warning("Mock carbon module not available, using fallback data")
+            self._mock_available = False
+            # Use the fallback fetcher's data
+            self._fallback = FallbackCarbonIntensityFetcher(region)
     
     def get_current_intensity(self, force_refresh: bool = False) -> float:
         """
@@ -342,8 +363,11 @@ class MockCarbonIntensityFetcher(CarbonIntensityFetcher):
         Returns:
             Carbon intensity in gCO2eq/kWh
         """
-        data = self._mock_client.get_current_intensity()
-        return data["carbon_intensity"]
+        if self._mock_available:
+            data = self._mock_client.get_current_intensity()
+            return data["carbon_intensity"]
+        else:
+            return self._fallback.get_current_intensity()
     
     def get_intensity_forecast(self) -> List[Tuple[datetime, float]]:
         """
@@ -352,14 +376,17 @@ class MockCarbonIntensityFetcher(CarbonIntensityFetcher):
         Returns:
             List of (datetime, intensity) tuples
         """
-        data = self._mock_client.get_forecast(hours=24)
-        forecast = []
-        
-        for ts_str, value in data["forecast"]:
-            ts = datetime.fromisoformat(ts_str)
-            forecast.append((ts, value))
-        
-        return forecast
+        if self._mock_available:
+            data = self._mock_client.get_forecast(hours=24)
+            forecast = []
+            
+            for ts_str, value in data["forecast"]:
+                ts = datetime.fromisoformat(ts_str)
+                forecast.append((ts, value))
+            
+            return forecast
+        else:
+            return self._fallback.get_intensity_forecast()
     
     def get_carbon_data(self) -> Dict[str, Any]:
         """
@@ -368,6 +395,9 @@ class MockCarbonIntensityFetcher(CarbonIntensityFetcher):
         Returns:
             Dictionary with current intensity, forecast, and analysis
         """
+        if not self._mock_available:
+            return self._fallback.get_carbon_data()
+            
         data = self._mock_client.get_forecast(hours=24)
         
         # Transform the forecast data to match the format expected by clients

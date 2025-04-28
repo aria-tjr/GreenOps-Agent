@@ -334,6 +334,35 @@ class MockPrometheusClient:
                     for i in range(len(timestamps))
                 ]
         
+        # Generate pod-level mock data for compatibility with MetricsCollector
+        pods = {}
+        pod_names = [
+            "web-frontend-abc123",
+            "api-service-def456",
+            "database-xyz789",
+            "batch-job-ghi012",
+            "etl-processor-jkl345"
+        ]
+        for pod_name in pod_names:
+            # Simulate resource usage and requests/limits
+            cpu_usage = [(ts, random.uniform(0.05, 0.5)) for ts in timestamps]
+            mem_usage = [(ts, random.uniform(50, 500)) for ts in timestamps]  # MB
+            pods[pod_name] = {
+                "resources": {
+                    "cpu": {
+                        "usage": cpu_usage,
+                        "request": random.uniform(0.1, 0.3),
+                        "limit": random.uniform(0.4, 1.0)
+                    },
+                    "memory": {
+                        "usage_mb": mem_usage,
+                        "request_mb": random.uniform(100, 200),
+                        "limit_mb": random.uniform(300, 600)
+                    }
+                }
+            }
+        results["pods"] = pods
+        
         return results
 
 

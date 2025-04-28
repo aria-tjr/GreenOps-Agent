@@ -163,7 +163,7 @@ def format_bytes(size_bytes: float) -> str:
     elif size_bytes < 1024 ** 3:
         return f"{size_bytes / (1024 ** 2):.2f} MB"
     else:
-        return f"{size_bytes / (1024 ** 3)::.2f} GB"
+        return f"{size_bytes / (1024 ** 3):.2f} GB"
 
 
 def print_metrics_summary(metrics: Dict[str, Any]) -> None:

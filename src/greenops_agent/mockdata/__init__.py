@@ -7,7 +7,7 @@ like Prometheus or carbon intensity APIs.
 """
 
 from .carbon import create_mock_carbon_client
-from .prometheus import create_mock_client, MockPrometheusClient
+from .prometheus import MockPrometheusClient, create_mock_prometheus_client
 from .workload import (
     generate_sine_pattern,
     generate_spike_pattern,
@@ -18,7 +18,7 @@ from .workload import (
 
 __all__ = [
     'create_mock_carbon_client',
-    'create_mock_client',
+    'create_mock_prometheus_client',
     'MockPrometheusClient',
     'generate_sine_pattern',
     'generate_spike_pattern',
