@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ include "greenops-agent.fullname" . }}
+  labels:
+    {{- include "greenops-agent.labels" . | nindent 4 }}
+data:
+  prometheus_url: {{ .Values.config.prometheusUrl | quote }}
+  region: {{ .Values.config.region | quote }}
+  update_interval: {{ .Values.config.updateInterval | quote }}

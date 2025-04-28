@@ -1,0 +1,85 @@
+# Default values for greenops-agent Helm chart
+replicaCount: 1
+
+image:
+  repository: greenops-agent
+  pullPolicy: IfNotPresent
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext: {}
+  # fsGroup: 2000
+
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  runAsNonRoot: true
+  runAsUser: 1000
+
+service:
+  type: ClusterIP
+  port: 8000
+
+resources:
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  limits:
+    cpu: 500m
+    memory: 512Mi
+  requests:
+    cpu: 100m
+    memory: 256Mi
+
+livenessProbe:
+  initialDelaySeconds: 30
+  periodSeconds: 30
+  path: /health
+  
+readinessProbe:
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  path: /health
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 3
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+nodeSelector: {}
+
+tolerations: []
+
+affinity: {}
+
+# GreenOps Agent specific configuration
+config:
+  # Prometheus URL where the agent will query metrics from
+  prometheusUrl: "http://prometheus-server.monitoring.svc.cluster.local:9090"
+  # Region code for carbon intensity data
+  region: "DEFAULT"
+  # Update interval in seconds
+  updateInterval: "300"
+  # Carbon intensity API key (should be provided via --set or via secret)
+  carbonApiKey: ""
+  # Use existing secrets instead of creating one
+  existingSecret: ""
