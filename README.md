@@ -1,8 +1,7 @@
 # GreenOps Agent
 
-![Build](https://img.shields.io/github/actions/workflow/status/ariatajeri/greenops-agent/python-app.yml?branch=main)
-![PyPI](https://img.shields.io/pypi/v/greenops-agent)
-![License](https://img.shields.io/github/license/ariatajeri/greenops-agent)
+[![Build](https://img.shields.io/github/actions/workflow/status/aria-tjr/GreenOps-Agent/python-app.yml?branch=main)](https://github.com/aria-tjr/GreenOps-Agent/actions)
+[![License](https://img.shields.io/github/license/aria-tjr/GreenOps-Agent)](LICENSE)
 ![Python](https://img.shields.io/badge/python-3.10+-blue)
 
 ## Why GreenOps Agent?
@@ -15,7 +14,7 @@
 
 A Kubernetes agent for optimizing workloads for energy efficiency and lower carbon footprint.
 
-![GreenOps Logo](docs/images/greenops-logo.png)
+<!-- TODO: add logo at docs/images/greenops-logo.png -->
 
 ## Overview
 
@@ -41,7 +40,7 @@ The GreenOps Agent consists of several components:
 4. **Recommendation Engine**: Generates optimization suggestions based on all data
 5. **Service Layer**: Provides CLI and API interfaces to the system
 
-![Architecture Diagram](docs/images/architecture.png)
+<!-- TODO: add architecture diagram at docs/images/architecture.png -->
 
 ## Example Output
 
@@ -203,8 +202,8 @@ The carbon intensity module supports the following regions:
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/greenops-agent.git
-cd greenops-agent
+git clone https://github.com/aria-tjr/GreenOps-Agent.git
+cd GreenOps-Agent
 
 # Create virtual environment
 python -m venv venv
